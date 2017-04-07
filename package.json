@@ -1,17 +1,40 @@
 {
-    "buildNpmdoc":"socketio-jwt",
+    "author": "kai zhu <kaizhu256@gmail.com>",
+    "buildNpmdoc": "socketio-jwt",
+    "description": "api documentation for [socketio-jwt (v4.5.0)](https://github.com/auth0/socketio-jwt#readme) [![npm package](https://img.shields.io/npm/v/npmdoc-socketio-jwt.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-socketio-jwt) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-socketio-jwt.svg)](https://travis-ci.org/npmdoc/node-npmdoc-socketio-jwt)",
     "devDependencies": {
-        "socketio-jwt": "*",
         "electron-lite": "kaizhu256/node-electron-lite#alpha",
+        "socketio-jwt": "*",
         "utility2": "kaizhu256/node-utility2#alpha"
     },
-    "name":"npmdoc-socketio-jwt",
+    "engines": {
+        "node": ">=4.0"
+    },
+    "homepage": "https://github.com/npmdoc/node-npmdoc-socketio-jwt",
+    "keywords": [
+        "documentation",
+        "socketio-jwt"
+    ],
+    "license": "MIT",
+    "main": "lib.npmdoc_socketio_jwt.js",
+    "name": "npmdoc-socketio-jwt",
+    "nameAlias": "npmdoc_socketio_jwt",
+    "nameOriginal": "npmdoc-socketio-jwt",
+    "os": [
+        "darwin",
+        "linux"
+    ],
     "repository": {
         "type": "git",
         "url": "https://github.com/npmdoc/node-npmdoc-socketio-jwt"
     },
     "scripts": {
-        "build-ci": "utility2 shReadmeTest build_ci.sh"
+        "build-ci": "utility2 shReadmeTest build_ci.sh",
+        "env": "env",
+        "heroku-postbuild": "(set -e; npm install \"kaizhu256/node-utility2#alpha\"; utility2 shDeployHeroku)",
+        "postinstall": "if [ -f npm_scripts.sh ]; then ./npm_scripts.sh postinstall; fi",
+        "start": "(set -e; export PORT=${PORT:-8080}; utility2 start test.js)",
+        "test": "(set -e; export PORT=$(utility2 shServerPortRandom); utility2 test test.js)"
     },
     "version": "0.0.1"
 }
