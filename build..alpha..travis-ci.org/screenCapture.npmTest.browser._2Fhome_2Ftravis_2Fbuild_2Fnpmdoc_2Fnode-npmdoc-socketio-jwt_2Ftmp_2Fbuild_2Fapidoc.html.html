@@ -1,0 +1,315 @@
+<html><head></head><body><div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a href="https://github.com/auth0/socketio-jwt#readme">socketio-jwt (v4.5.0)</a>
+</h1>
+<h4>authenticate socket.io connections using JWTs</h4>
+<div class="apidocSectionDiv"><a href="#apidoc.tableOfContents" id="apidoc.tableOfContents"><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.socketio-jwt">module socketio-jwt</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.socketio-jwt.UnauthorizedError">
+            function <span class="apidocSignatureSpan">socketio-jwt.</span>UnauthorizedError
+            <span class="apidocSignatureSpan">(code, error)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.socketio-jwt.authorize">
+            function <span class="apidocSignatureSpan">socketio-jwt.</span>authorize
+            <span class="apidocSignatureSpan">(options, onConnection)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">socketio-jwt.</span>UnauthorizedError.prototype</span>
+
+        </li>
+
+    </ol></li>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.socketio-jwt.UnauthorizedError">module socketio-jwt.UnauthorizedError</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.socketio-jwt.UnauthorizedError.UnauthorizedError">
+            function <span class="apidocSignatureSpan">socketio-jwt.</span>UnauthorizedError
+            <span class="apidocSignatureSpan">(code, error)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.socketio-jwt.UnauthorizedError.prototype">module socketio-jwt.UnauthorizedError.prototype</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.socketio-jwt.UnauthorizedError.prototype.constructor">
+            function <span class="apidocSignatureSpan">socketio-jwt.UnauthorizedError.prototype.</span>constructor
+            <span class="apidocSignatureSpan">(code, error)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.socketio-jwt" id="apidoc.module.socketio-jwt">module socketio-jwt</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.socketio-jwt.UnauthorizedError" id="apidoc.element.socketio-jwt.UnauthorizedError">
+        function <span class="apidocSignatureSpan">socketio-jwt.</span>UnauthorizedError
+        <span class="apidocSignatureSpan">(code, error)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function UnauthorizedError(code, error) {
+  Error.call(this, error.message);
+  this.message = error.message;
+  this.inner = error;
+  this.data = {
+    message: this.message,
+    code: code,
+    type: "UnauthorizedError"
+  };
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.socketio-jwt.authorize" id="apidoc.element.socketio-jwt.authorize">
+        function <span class="apidocSignatureSpan">socketio-jwt.</span>authorize
+        <span class="apidocSignatureSpan">(options, onConnection)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function authorize(options, onConnection) {
+  options = xtend({ decodedPropertyName: 'decoded_token' }, options);
+
+  if (!options.handshake) {
+    return noQsMethod(options);
+  }
+
+  var defaults = {
+    success: function(data, accept){
+      if (data.request) {
+        accept();
+      } else {
+        accept(null, true);
+      }
+    },
+    fail: function(error, data, accept){
+      if (data.request) {
+        accept(error);
+      } else {
+        accept(null, false);
+      }
+    }
+  };
+
+  var auth = xtend(defaults, options);
+
+  return function(data, accept){
+    var token, error;
+    var req = data.request || data;
+    var authorization_header = (req.headers || {}).authorization;
+
+    if (authorization_header) {
+      var parts = authorization_header.split(' ');
+      if (parts.length == 2) {
+        var scheme = parts[0],
+          credentials = parts[1];
+
+        if (scheme.toLowerCase() === 'bearer') {
+          token = credentials;
+        }
+      } else {
+        error = new UnauthorizedError('credentials_bad_format', {
+          message: 'Format is Authorization: Bearer [token]'
+        });
+        return auth.fail(error, data, accept);
+      }
+    }
+
+    //get the token from query string
+    if (req._query &amp;&amp; req._query.token) {
+      token = req._query.token;
+    }
+    else if (req.query &amp;&amp; req.query.token) {
+      token = req.query.token;
+    }
+
+    if (!token) {
+      error = new UnauthorizedError('credentials_required', {
+        message: 'No Authorization header was found'
+      });
+      return auth.fail(error, data, accept);
+    }
+
+    var onJwtVerificationReady = function(err, decoded) {
+
+      if (err) {
+        error = new UnauthorizedError(err.code || 'invalid_token', err);
+        return auth.fail(error, data, accept);
+      }
+
+      data[options.decodedPropertyName] = decoded;
+
+      return auth.success(data, accept);
+    };
+
+    var onSecretReady = function(err, secret) {
+      if (err) {
+        error = new UnauthorizedError(err.code || 'invalid_secret', err);
+        return auth.fail(error, data, accept);
+      }
+
+      jwt.verify(token, secret, options, onJwtVerificationReady);
+    };
+
+    getSecret(req, options.secret, token, onSecretReady);
+  };
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+```
+
+## Example usage
+
+```javascript
+// set authorization for socket.io
+io.sockets
+  .on('connection', socketioJwt.<span class="apidocCodeKeywordSpan">authorize</span>({
+    secret: 'your secret or public key',
+    timeout: 15000 // 15 seconds to send the authentication message
+  })).on('authenticated', function(socket) {
+    //this socket is authenticated, we are good to handle more events from it.
+    console.log('hello! ' + socket.decoded_token.name);
+  });
+```
+...</pre></li>
+    </ul>
+
+
+
+
+</div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.socketio-jwt.UnauthorizedError" id="apidoc.module.socketio-jwt.UnauthorizedError">module socketio-jwt.UnauthorizedError</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.socketio-jwt.UnauthorizedError.UnauthorizedError" id="apidoc.element.socketio-jwt.UnauthorizedError.UnauthorizedError">
+        function <span class="apidocSignatureSpan">socketio-jwt.</span>UnauthorizedError
+        <span class="apidocSignatureSpan">(code, error)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function UnauthorizedError(code, error) {
+  Error.call(this, error.message);
+  this.message = error.message;
+  this.inner = error;
+  this.data = {
+    message: this.message,
+    code: code,
+    type: "UnauthorizedError"
+  };
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.socketio-jwt.UnauthorizedError.prototype" id="apidoc.module.socketio-jwt.UnauthorizedError.prototype">module socketio-jwt.UnauthorizedError.prototype</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.socketio-jwt.UnauthorizedError.prototype.constructor" id="apidoc.element.socketio-jwt.UnauthorizedError.prototype.constructor">
+        function <span class="apidocSignatureSpan">socketio-jwt.UnauthorizedError.prototype.</span>constructor
+        <span class="apidocSignatureSpan">(code, error)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function UnauthorizedError(code, error) {
+  Error.call(this, error.message);
+  this.message = error.message;
+  this.inner = error;
+  this.data = {
+    message: this.message,
+    code: code,
+    type: "UnauthorizedError"
+  };
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
+</body></html>
